@@ -10,3 +10,4 @@
 /dataSources.local.xml
 # Idea Files
 /*.iml
+__pycache__/
