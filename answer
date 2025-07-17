@@ -1,0 +1,23 @@
+from fastapi import FastAPI
+-> Importation de FastAPI provenant de fastapi
+
+from starlette.responses import Response
+-> Importation de Response provenant de starlette
+
+app = FastAPI()
+-> Créer l'instance app via FastAPI
+
+@app.get("/")
+-> Une route GET qui doit retourner ou effecter quelque chose dans le endpoint "/".
+
+def root():
+-> nom de la fonction à effectuer
+
+with open("welcome.html", "r", encoding="utf-8") as file:
+-> Ouverture du fichier welcome.html et on le déclare comme étant file.
+
+html_content = file.read()
+-> Stocker le contenu de file dans html_content
+
+return Response(content=html_content, status_code=200, media_type="text/html")
+-> Retourner la page en question.
