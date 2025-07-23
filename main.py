@@ -45,35 +45,30 @@ def serialized_stored_events():
 def list_events():
     return {"events": serialized_stored_events()}
 
-
 @app.post("/events")
-def post_list_events(event_data: EventModel):
-    initial_size = len(events_store)
-    if event_data is not None:
-        events_store.append(event_data)
-        if len(events_store) > initial_size:
-            return {"events" : serialized_stored_events()}
-    return Response(content=json.dumps({"message": "Event not created!"}))
+def post_event(list_event : List[EventModel]):
+    for event in list_event:
+        exist = False
+        for initial_event in events_store:
+            if initial_event.name == event.name:
+                exist = True
+        if exist is False:
+            events_store.append(event)
+    return Response(content=json.dumps({"events": serialized_stored_events()}),status_code=200,media_type="application/json")
 
 @app.put("/events")
-def update_events(updated_events: List[EventModel] = Body(...)):
-    updated_count = 0
-
-    for updated_event in updated_events:
-        for i, stored_event in enumerate(events_store):
-            if stored_event.name == updated_event.name:
-                events_store[i] = updated_event
-                updated_count += 1
+def modify_event(list_event: List[EventModel]):
+    for event in list_event:
+        found = False
+        for i,initial_event in enumerate(events_store):
+            if initial_event.name == event.name:
+                events_store[i] = event
+                found = True
                 break
+        if found is False:
+            events_store.append(event)
+    return Response(content=json.dumps({"events": serialized_stored_events()}),status_code=200,media_type="application/json")
 
-    if updated_count > 0:
-        return {"events": serialized_stored_events()}
-    else:
-        return Response(
-            content=json.dumps({"message": "No matching events found to update!"}),
-            media_type="application/json",
-            status_code=404
-        )
 
 @app.get("/{full_path:path}")
 def catch_all(full_path: str):
