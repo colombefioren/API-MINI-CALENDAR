@@ -9,22 +9,15 @@ app = FastAPI()
 
 @app.get("/")
 async def root(request: Request):
-    x_api_key_value = request.headers.get("x-api-key")
-    content_type = request.headers.get("Accept")
-
-    if x_api_key_value is None:
-        return Response(content=json.dumps({"message": "API key not given!"}),
-                        status_code=403, media_type="application/json")
-    elif x_api_key_value != "123456789":
-        return Response(content=json.dumps({"message": "API key is invalid!"}),status_code=403, media_type="application/json")
-
-    if content_type not in ("text/html", "text/plain"):
-        return Response(content=json.dumps({"message": "Type error"}),
-                        status_code=400, media_type="application/json")
-
-    with open("welcome.html", "r", encoding="utf-8") as file:
-        html_content = file.read()
-        return Response(content=html_content, status_code=200, media_type="text/html")
+    accept_type = request.headers.get("Accept")
+    key_value = request.headers.get("x-api-key")
+    if not ("text/plain" in accept_type or "text/plain" in accept_type):
+        return Response(content=json.dumps({"message" : f"Media type not supported : {accept_type}"}),status_code=400,media_type="application/json")
+    if key_value != "12345678":
+        return Response(content=json.dumps({"message":"The api key was not recognized!"}),status_code=403,media_type="text/html")
+    with open("welcome.html","r",encoding="utf-8") as file:
+        html_content=file.read()
+    return Response(content=html_content,status_code=200,media_type="text/html")
 
 
 class EventModel(BaseModel):
